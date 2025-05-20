@@ -28,7 +28,6 @@ export class UploadService {
         Key: `eletivas/${mediaType}/${Date.now()}/${fileName}`,
         Body: file.buffer,
         ContentType: file.mimetype,
-        ACL: 'public-read', // Define o arquivo como publicamente acessível
       };
 
       // Upload do arquivo para o S3

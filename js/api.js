@@ -180,6 +180,3 @@ function formatMediaUrl(mediaUrl, type = "image") {
   // Caso contrário, retorna a URL como está
   return mediaUrl;
 }
-
-// Expõe a função globalmente
-window.formatImageUrl = formatImageUrl;

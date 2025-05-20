@@ -3,13 +3,13 @@
 // Função para fazer upload de uma única imagem
 async function uploadImage(file) {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("media", file);
 
   try {
     // Mostra notificação de processamento
     showNotification("Enviando imagem...", "info");
 
-    const response = await fetch("http://localhost:3000/api/upload", {
+    const response = await fetch("http://localhost:3004/api/upload", {
       method: "POST",
       body: formData,
     });
@@ -19,7 +19,7 @@ async function uploadImage(file) {
     }
 
     const result = await response.json();
-    return result.url; // URL da imagem no S3
+    return result; // URL da imagem no S3
   } catch (error) {
     console.error("Erro no upload:", error);
     showNotification("Erro ao enviar imagem. Tente novamente.", "error");
@@ -33,14 +33,14 @@ async function uploadMultipleImages(files) {
 
   // Adiciona cada arquivo ao FormData
   for (let i = 0; i < files.length; i++) {
-    formData.append("images", files[i]);
+    formData.append("medias", files[i]);
   }
 
   try {
     // Mostra notificação de processamento com contagem de arquivos
     showNotification(`Enviando ${files.length} imagens...`, "info");
 
-    const response = await fetch("http://localhost:3000/api/upload/multiple", {
+    const response = await fetch("http://localhost:3004/api/upload/multiple", {
       method: "POST",
       body: formData,
       // Não definimos timeout para permitir uploads grandes
@@ -55,7 +55,7 @@ async function uploadMultipleImages(files) {
       `${files.length} imagens enviadas com sucesso!`,
       "success"
     );
-    return result.urls; // Array de URLs das imagens no S3
+    return result; // Array de URLs das imagens no S3
   } catch (error) {
     console.error("Erro no upload múltiplo:", error);
     showNotification("Erro ao enviar imagens. Tentando modo offline.", "error");

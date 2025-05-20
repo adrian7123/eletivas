@@ -1,4 +1,8 @@
 import { Request, Response } from 'express';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import { s3, s3Config } from '../config/s3';
 import { UploadService } from '../services/upload.service';
 
 export class UploadController {
@@ -19,10 +23,10 @@ export class UploadController {
       }
 
       // Faz upload da mídia usando o serviço
-      const { url, type, mimeType } = await UploadService.uploadMedia(req.file);
+      const { url } = await UploadService.uploadMedia(req.file);
 
       // Retorna os detalhes da mídia
-      return res.status(200).json({ url, type, mimeType });
+      return res.status(200).json(url);
     } catch (error) {
       console.error('Erro no controller de upload:', error);
       return res.status(500).json({ message: 'Erro ao fazer upload da mídia' });
@@ -44,7 +48,7 @@ export class UploadController {
       );
 
       // Retorna os detalhes das mídias
-      return res.status(200).json({ medias: mediaResults });
+      return res.status(200).json(mediaResults.map(media => media.url));
     } catch (error) {
       console.error('Erro no controller de upload múltiplo:', error);
       return res.status(500).json({ message: 'Erro ao fazer upload das mídias' });
@@ -52,22 +56,51 @@ export class UploadController {
   }
 
   /**
-   * Controlador para visualização de mídia
-   * Redireciona para a URL da mídia armazenada no S3
+    Pega media do s3 e retorna o arquivo
+    baseado na url
    */
   static async getMedia(req: Request, res: Response): Promise<any> {
     try {
-      const { mediaKey } = req.params;
+      const { key } = req.query;
 
-      if (!mediaKey) {
+      if (!key) {
         return res.status(400).json({ message: 'Identificador da mídia não fornecido' });
       }
 
-      // Obtém a URL da mídia usando o serviço
-      const mediaUrl = UploadService.getMediaUrl(mediaKey);
+      const mediaKey = key as string;
 
-      // Redireciona para a URL da mídia no S3
-      return res.redirect(mediaUrl);
+      const urlSplit = mediaKey.split('/');
+      const fileName = urlSplit[urlSplit.length - 1];
+
+      // remove filename
+      urlSplit.pop();
+      // remove https://s3-bucket
+      urlSplit.splice(0, 3);
+
+      const params = {
+        Key: urlSplit.join('/') + `/${fileName}`,
+        Bucket: s3Config.bucket,
+      };
+
+      const data = await s3.getObject(params).promise();
+
+      // Cria um diretório temporário para o arquivo
+      const tmpDir = os.tmpdir();
+      const tmpFilePath = path.join(tmpDir, fileName);
+
+      // Salva o arquivo temporariamente
+      fs.writeFileSync(tmpFilePath, data.Body as Buffer);
+
+      // Configura limpeza após enviar o arquivo
+      res.on('finish', () => {
+        try {
+          fs.unlinkSync(tmpFilePath);
+        } catch (err) {
+          console.error('Erro ao remover arquivo temporário:', err);
+        }
+      });
+
+      return res.status(200).sendFile(tmpFilePath);
     } catch (error) {
       console.error('Erro ao obter mídia:', error);
       return res.status(500).json({ message: 'Erro ao obter a mídia' });

@@ -14,16 +14,10 @@ export interface ICard extends Document {
   updatedAt: Date;
 }
 
-const MediaSchema = new Schema({
-  url: { type: String, required: true },
-  type: { type: String, enum: ['image', 'audio', 'video'], required: true },
-  mimeType: { type: String, required: true },
-});
-
 const CardSchema = new Schema<ICard>(
   {
     content: { type: String, required: true },
-    medias: { type: [MediaSchema], required: false },
+    medias: { type: [String], required: false },
     author: { type: String, required: true },
   },
   { timestamps: true },

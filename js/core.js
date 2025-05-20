@@ -2,6 +2,8 @@
 const api = new Api("http://localhost:3004");
 let cards = [];
 let userName = localStorage.getItem("userName") || "";
+let authName = localStorage.getItem("authName") || "";
+let admin = localStorage.getItem("admin") || false;
 
 // Função para verificar se o usuário já forneceu o nome
 function checkUserName() {
@@ -31,13 +33,18 @@ function checkUserName() {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("userName");
+      localStorage.removeItem("authName");
+      localStorage.removeItem("admin");
       userName = "";
-      nameModal.style.display = "none"; // Não mostra o modal automaticamente
+      authName = "";
+      admin = false;
+      nameModal.classList.remove("visible"); // Não mostra o modal automaticamente
       userWelcome.textContent = "";
 
       // Oculta o formulário de criar card e mostra o botão de login
       if (createCardContainer) createCardContainer.style.display = "none";
       if (loginCardContainer) loginCardContainer.style.display = "block";
+      updateCards();
     });
   }
 
@@ -62,16 +69,30 @@ function checkUserName() {
   loadCards();
 
   // Caso contrário, configura o modal
-  submitBtn.addEventListener("click", () => {
+  submitBtn.addEventListener("click", async () => {
     const name = userNameInput.value.trim();
     if (name.length < 2) {
       nameError.textContent =
         "Por favor, digite um nome válido (mínimo 2 caracteres)";
       return;
     }
-    userName = name;
+
+    userNameInput.value = ""; // Limpa o campo de entrada
+
+    const res = await api.post("/api/user/login", { name });
+
+    userName = res.name;
+    admin = res.admin;
+    authName = name;
+
     localStorage.setItem("userName", userName);
-    nameModal.style.display = "none";
+    localStorage.setItem("authName", authName);
+    localStorage.setItem("admin", admin);
+
+    nameModal.classList.remove("visible");
+
+    updateCards();
+
     if (userWelcome) {
       userWelcome.textContent = `Olá, ${userName}!`;
     }
@@ -123,11 +144,10 @@ const loadCards = async () => {
       content: card.content,
       date: formatDate(card.createdAt),
       author: card.author || "",
-      images: card.images || [], // Certifica que temos o array de imagens
+      medias: card.medias || [], // Certifica que temos o array de imagens
     }));
 
     updateCards();
-    console.log("Cards carregados com sucesso:", cards.length);
   } catch (error) {
     console.error("Erro ao carregar cards:", error);
 
@@ -257,8 +277,6 @@ const createCard = async () => {
         }
       } catch (uploadError) {
         console.error("Erro no upload das imagens:", uploadError);
-        // Fallback para URLs locais temporárias em caso de falha
-        imageUrls = selectedImages.map((imgObj) => imgObj.url);
       }
     }
 
@@ -266,7 +284,7 @@ const createCard = async () => {
     const cardData = {
       content: cardContent,
       author: userName,
-      images: imageUrls,
+      medias: imageUrls,
     };
 
     // Enviar o card para a API
@@ -276,7 +294,7 @@ const createCard = async () => {
     const newCard = {
       id: response._id,
       content: response.content,
-      images: imageUrls,
+      medias: imageUrls,
       date: "Agora",
       author: userName,
     };
@@ -305,7 +323,7 @@ const createCard = async () => {
     const newCard = {
       id: Date.now(),
       content: cardContent,
-      images: selectedImages.map((img) => img.url),
+      medias: selectedImages.map((img) => img.url),
       date: "Agora",
       author: userName,
     };
@@ -319,6 +337,10 @@ const createCard = async () => {
     submitBtn.textContent = originalBtnText;
     submitBtn.disabled = false;
   }
+};
+
+const imageUrl = (url) => {
+  return `http://localhost:3004/api/media?key=${url}`;
 };
 
 const updateCards = () => {
@@ -348,38 +370,94 @@ const updateCards = () => {
     // Criar o cabeçalho do card com autor e data
     const headerDiv = document.createElement("div");
     headerDiv.className = "post-user";
+
+    // Cria um wrapper para o header para incluir botão de lixeira para admins
+    const headerWrapper = document.createElement("div");
+    headerWrapper.className = "post-header-wrapper";
+    headerWrapper.style.display = "flex";
+    headerWrapper.style.justifyContent = "space-between";
+    headerWrapper.style.alignItems = "center";
+    headerWrapper.style.width = "100%";
+
+    // Adiciona o texto de autor e data
     headerDiv.textContent = `${card.author ? card.author + " • " : ""}${
       card.date || ""
     }`;
+    headerWrapper.appendChild(headerDiv);
+
+    // Adiciona botão de lixeira se o usuário for admin
+    if (admin === true || admin === "true") {
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "delete-card-btn";
+      deleteButton.innerHTML = `<i class="fas fa-trash"></i>`;
+      deleteButton.title = "Excluir este card";
+      deleteButton.style.background = "transparent";
+      deleteButton.style.border = "none";
+      deleteButton.style.color = "#ff3b30";
+      deleteButton.style.cursor = "pointer";
+      deleteButton.style.fontSize = "16px";
+      deleteButton.style.padding = "4px 8px";
+      deleteButton.style.borderRadius = "4px";
+      deleteButton.onmouseover = function () {
+        this.style.backgroundColor = "rgba(255, 59, 48, 0.1)";
+      };
+      deleteButton.onmouseout = function () {
+        this.style.backgroundColor = "transparent";
+      };
+
+      // Adiciona evento de clique para excluir o card
+      deleteButton.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (confirm("Tem certeza que deseja excluir este card?")) {
+          try {
+            // Chamar API para deletar o card
+            await api.delete(`/api/cards/${card.id}?auth=${authName}`);
+
+            // Remove o card da lista local
+            cards = cards.filter((c) => c.id !== card.id);
+
+            // Atualiza a exibição
+            updateCards();
+
+            // Mostra notificação de sucesso
+            showNotification("Card excluído com sucesso!");
+          } catch (error) {
+            console.error("Erro ao excluir card:", error);
+            showNotification("Erro ao excluir card.", "error");
+          }
+        }
+      });
+
+      headerWrapper.appendChild(deleteButton);
+    }
 
     // Criar o conteúdo do card
     const contentDiv = document.createElement("div");
     contentDiv.className = "post-content";
     contentDiv.textContent = card.content;
 
-    // Adicionar os elementos base
-    cardElement.appendChild(headerDiv);
+    // Adiciona os elementos ao card
+    cardElement.appendChild(headerWrapper);
     cardElement.appendChild(contentDiv);
 
     // Se houver imagens, criar o grid de imagens
-    if (card.images && card.images.length > 0) {
+    if (card.medias && card.medias.length > 0) {
       const imageGrid = document.createElement("div");
       imageGrid.className = "card-image-grid";
 
       // Determinar o layout do grid com base na quantidade de imagens
-      if (card.images.length === 1) {
+      if (card.medias.length === 1) {
         imageGrid.style.gridTemplateColumns = "1fr";
-      } else if (card.images.length === 2) {
+      } else if (card.medias.length === 2) {
         imageGrid.style.gridTemplateColumns = "1fr 1fr";
-      } else if (card.images.length >= 3) {
+      } else if (card.medias.length >= 3) {
         imageGrid.style.gridTemplateColumns = "1fr 1fr 1fr";
       }
 
       // Adicionar cada imagem ao grid
-      card.images.forEach((imgUrl) => {
-        // Verificar se a URL é válida
-        if (!imgUrl) return;
-
+      card.medias.forEach((url) => {
+        const imgUrl = imageUrl(url);
+        console.log("Adicionando imagem:", imgUrl);
         const imgWrapper = document.createElement("div");
         imgWrapper.className = "image-wrapper";
 
@@ -390,13 +468,15 @@ const updateCards = () => {
         img.loading = "lazy"; // Carregamento preguiçoso para melhor performance
         img.onerror = function () {
           // Tratar imagens quebradas
-          this.src = "imgs/image-placeholder.svg";
+          this.src = "imgs/img-error.svg";
           this.style.opacity = "0.5";
           this.style.padding = "10px";
+          this.error = true;
         };
 
         // Adicionar evento de clique para abrir em tela cheia
         img.onclick = function () {
+          if (this.error) return;
           openFullscreen(imgUrl);
         };
 
@@ -417,7 +497,7 @@ let currentImageIndex = 0;
 function openFullscreen(imgSrc) {
   // Encontrar o card que contém esta imagem
   const currentCard = cards.find(
-    (card) => card.images && card.images.includes(imgSrc)
+    (card) => card.medias && card.medias.includes(imgSrc)
   );
 
   if (currentCard && currentCard.images) {

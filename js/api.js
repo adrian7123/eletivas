@@ -1,6 +1,7 @@
 class Api {
   constructor(baseUrl = "") {
-    this.baseUrl = baseUrl;
+    // Usa a URL da API das configurações, se disponível
+    this.baseUrl = baseUrl || (window.appConfig ? window.appConfig.apiUrl : "");
     this.headers = {
       "Content-Type": "application/json",
     };

@@ -1,5 +1,7 @@
-// Inicializa a API com a URL base
-const api = new Api("http://localhost:3004");
+// Inicializa a API com a URL base das configurações
+const api = new Api(
+  window.appConfig ? window.appConfig.apiUrl : "http://localhost:3004"
+);
 let cards = [];
 let userName = localStorage.getItem("userName") || "";
 let authName = localStorage.getItem("authName") || "";
@@ -340,7 +342,10 @@ const createCard = async () => {
 };
 
 const imageUrl = (url) => {
-  return `http://localhost:3004/api/media?key=${url}`;
+  const apiUrl = window.appConfig
+    ? window.appConfig.apiUrl
+    : "http://localhost:3004";
+  return `${apiUrl}/api/media?key=${url}`;
 };
 
 const updateCards = () => {

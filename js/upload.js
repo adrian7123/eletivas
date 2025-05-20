@@ -4,12 +4,15 @@
 async function uploadImage(file) {
   const formData = new FormData();
   formData.append("media", file);
-
   try {
     // Mostra notificação de processamento
     showNotification("Enviando imagem...", "info");
 
-    const response = await fetch("http://localhost:3004/api/upload", {
+    const uploadUrl = window.appConfig
+      ? `${window.appConfig.apiUrl}/api/upload`
+      : "http://localhost:3004/api/upload";
+
+    const response = await fetch(uploadUrl, {
       method: "POST",
       body: formData,
     });

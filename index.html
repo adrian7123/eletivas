@@ -6,22 +6,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eletivas Professora Mayara</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton-screen/2.0.1/skeleton-screen.min.css"
+    integrity="sha512-+Qn6Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn1Qn6Qn1Qn1Qn1Qn1Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Skeleton Loader CDN -->
 </head>
 
 <body>
+  <!-- Modal de cadastro de nome -->
+  <div id="nameModal" class="name-modal">
+    <div class="name-modal-content">
+      <h2 style="color: blue;">Eletiva da Professora Mayara</h2>
+      <h2>Bem-vindo(a)!</h2>
+      <p>Por favor, digite seu nome para continuar:</p>
+      <input type="text" id="userName" class="name-input" placeholder="Digite seu nome">
+      <button id="submitName" class="button">Continuar</button>
+      <p id="nameError" class="name-error"></p>
+    </div>
+  </div>
   <header>
-    <img src="imgs/logo.jpg" alt="Logo" class="logo" width="70" height="70">
-    <h1>Eletivas Professora <strong>Mayara</strong></h1>
+    <div class="header-left">
+      <img src="imgs/logo.jpg" alt="Logo" class="logo" width="70" height="70">
+    </div>
+    <div class="header-right">
+      <span class="user-welcome" id="userWelcome"></span>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
   </header>
+  <h1>Eletivas Professora <strong>Mayara</strong></h1>
   <div class="container">
-    <div class="card">
+    <!-- Botão de login que aparece quando o usuário não está logado -->
+    <div id="loginCardContainer" class="card login-card" style="display: none; text-align: center;">
+      <p>Faça login para compartilhar seu conteúdo</p>
+      <button id="showLoginBtn" class="button login-button">Login</button>
+    </div>
+
+    <!-- Card de criação de posts (visível apenas quando logado) -->
+    <div id="createCardContainer" class="card parent" style="display: none;">
       <textarea id="cardContent" class="textarea" placeholder="Compartilhe algo legal da aula de hoje..."></textarea>
+      <div id="imagePlaceholderBtn">
+        <img id="imagePlaceholderBtn" src="imgs/image-placeholder.svg" alt="Adicionar imagem"
+          style="width:32px;height:32px;opacity:0.6;cursor: pointer;" />
+      </div>
+      <div id="previewGrid" class="preview-grid"></div>
+      <input type="file" id="cardImage" class="input-image" accept="image/*" multiple style="display:none;">
       <button class="button" onclick="createCard()">Publicar</button>
     </div>
     <div class="container2"></div>
-
     <script src="js/api.js"></script>
+    <script src="js/upload-example.js"></script>
     <script src="js/core.js"></script>
+    <div id="fullscreenImageModal" class="fullscreen-modal">
+      <span class="close-modal">&times;</span>
+      <div class="modal-navigation">
+        <button class="nav-btn prev-btn" id="prevImage">&lt;</button>
+        <img class="modal-content" id="fullscreenImg">
+        <button class="nav-btn next-btn" id="nextImage">&gt;</button>
+      </div>
+      <div class="modal-counter" id="imageCounter">1/1</div>
+    </div>
+
+    <!-- Botão flutuante para recarregar cards -->
+    <button id="reloadBtn" class="floating-reload-btn" title="Recarregar cards">↻</button>
 </body>
 
 </html>

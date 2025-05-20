@@ -1,6 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import path from 'path';
 import { connectDB } from './config/database';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { indexRouter } from './routes';
@@ -10,14 +11,16 @@ dotenv.config();
 
 // Inicialização da aplicação Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3004;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', indexRouter);
+app.use('/api', indexRouter);
+
+app.use(express.static(path.join(__dirname, '../../')));
 
 app.use(notFoundHandler);
 

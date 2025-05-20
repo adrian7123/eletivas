@@ -146,3 +146,40 @@ class Api {
 
 // Exporta a classe para uso global
 window.Api = Api;
+
+/**
+ * Função para formatar URLs de mídia para usar a rota de visualização da API
+ * @param {string} mediaUrl - URL original da mídia
+ * @param {string} type - Tipo de mídia (image, audio, video)
+ * @returns {string} - URL formatada para uso na API
+ */
+function formatMediaUrl(mediaUrl, type = "image") {
+  // Se já for uma URL da nossa API, retorna como está
+  if (mediaUrl.startsWith(`http://localhost:3004/api/media/`)) {
+    return mediaUrl;
+  }
+
+  // Se for um blob local (uploads novos que ainda não foram enviados)
+  if (mediaUrl.startsWith("blob:")) {
+    return mediaUrl;
+  }
+
+  // Se for uma URL completa do S3 (já foi feito upload)
+  if (mediaUrl.includes("amazonaws.com/")) {
+    // Extrai o nome do arquivo (chave) da URL do S3
+    const parts = mediaUrl.split("/");
+    const mediaKey = parts[parts.length - 1];
+    return `http://localhost:3004/api/media/${mediaKey}`;
+  }
+
+  // Se for apenas um nome de arquivo sem caminho completo
+  if (!mediaUrl.includes("/")) {
+    return `http://localhost:3004/api/media/${mediaUrl}`;
+  }
+
+  // Caso contrário, retorna a URL como está
+  return mediaUrl;
+}
+
+// Expõe a função globalmente
+window.formatImageUrl = formatImageUrl;

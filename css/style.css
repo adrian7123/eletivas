@@ -58,3 +58,381 @@ h1 {
   font-size: 1.1rem;
   margin-top: 5px;
 }
+
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite linear;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.image-placeholder-btn {
+  transition: border-color 0.2s;
+}
+
+.image-placeholder-btn:hover {
+  border-color: #888;
+  background: #f5f5f5;
+}
+
+.fullscreen-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.card-image-grid {
+  display: grid;
+  grid-gap: 8px;
+  margin-top: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  padding-bottom: 75%; /* Proporção 4:3 */
+  height: 0;
+}
+
+.image-wrapper img.card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image-wrapper img.card-img:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.modal-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80%;
+}
+
+.nav-btn {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  margin: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.modal-counter {
+  color: white;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.name-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.name-modal.visible {
+  display: block;
+  opacity: 1;
+}
+
+.name-modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: modalFadeIn 0.5s;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.name-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.name-error {
+  color: red;
+  margin-top: 15px;
+  font-size: 14px;
+  min-height: 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  position: relative;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  background-color: #ff5252;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #ff1744;
+}
+
+.user-welcome {
+  margin-right: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.login-card {
+  text-align: center;
+  padding: 30px;
+}
+
+.login-card p {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.login-button {
+  width: 120px;
+  margin: 0 auto;
+}
+
+/* Estilos para notificações */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s, transform 0.3s;
+  max-width: 300px;
+}
+
+.notification.success {
+  background-color: #4caf50;
+  border-left: 5px solid #388e3c;
+}
+
+.notification.error {
+  background-color: #f44336;
+  border-left: 5px solid #d32f2f;
+}
+
+.notification.warning {
+  background-color: #ff9800;
+  border-left: 5px solid #f57c00;
+}
+
+.notification.info {
+  background-color: #2196f3;
+  border-left: 5px solid #1976d2;
+}
+
+/* Estilos para o loader */
+
+/* Botão flutuante para recarregar */
+.floating-reload-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #2196f3;
+  color: white;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s, background-color 0.3s;
+  z-index: 99;
+}
+
+.floating-reload-btn:hover {
+  background-color: #1976d2;
+  transform: scale(1.1);
+}
+
+.floating-reload-btn:active {
+  transform: scale(0.95) rotate(30deg);
+}
+
+.floating-reload-btn.loading {
+  animation: rotating 1s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilo para mensagem de cards vazios */
+.empty-message {
+  text-align: center;
+  padding: 30px;
+  color: #757575;
+}
+
+.empty-message p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+/* Indicador de carregamento inicial da aplicação */
+.app-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(252, 228, 236, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+
+.app-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: blue;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.app-loader p {
+  color: blue;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

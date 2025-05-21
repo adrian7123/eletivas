@@ -7,9 +7,6 @@ services:
       context: api
       dockerfile: Dockerfile
     container_name: api
-    volumes:
-      - ./api:/api
-      - /api/node_modules
     ports:
       - "3004:3004"
 

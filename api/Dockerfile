@@ -28,7 +28,7 @@ COPY --from=builder /api/dist ./dist
 RUN npm ci --only=production
 
 # Expõe a porta usada pela aplicação
-EXPOSE 3004
+EXPOSE 3005
 
 # Comando para iniciar a aplicação
 CMD ["npm", "run", "start"]

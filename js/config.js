@@ -16,7 +16,4 @@ const appConfig = {
 // Verifica se estamos em um ambiente de navegador
 if (typeof window !== "undefined") {
   window.appConfig = appConfig;
-
-  // Carrega configurações quando o documento estiver pronto
-  document.addEventListener("DOMContentLoaded", loadServerConfig);
 }

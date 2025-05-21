@@ -24,7 +24,7 @@ wsManager.onNewCard((newCard) => {
   };
 
   // Adiciona o novo card no início da lista se não for do usuário atual
-  if (formattedCard.author !== userName) {
+  if (!cards.find((card) => card.id === formattedCard.id)) {
     cards.unshift(formattedCard);
     updateCards();
     showNotification("Novo card publicado por " + formattedCard.author);

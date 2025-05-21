@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Card from '../models/card';
+import { WebSocketService } from '../services/websocket.service';
 
 export class CardController {
   static async get(req: Request, res: Response): Promise<any> {
@@ -15,8 +16,8 @@ export class CardController {
       const { content, author, medias } = req.body;
 
       // Validação dos campos obrigatórios
-      if (!content || !author) {
-        return res.status(400).json({ message: 'Conteúdo e autor são obrigatórios' });
+      if (!author) {
+        return res.status(400).json({ message: 'Autor são obrigatórios' });
       }
 
       // Cria e salva o novo card
@@ -27,6 +28,11 @@ export class CardController {
       });
 
       await newCard.save();
+
+      // Notificar todos os clientes conectados sobre o novo card
+      const wsService = WebSocketService.getInstance();
+      wsService.notifyCardCreated(newCard);
+
       return res.status(201).json(newCard);
     } catch (error) {
       console.error('Erro ao criar card:', error);
@@ -50,6 +56,11 @@ export class CardController {
 
       // Deleta o card
       await Card.findByIdAndDelete(id);
+
+      // Notificar todos os clientes conectados sobre a exclusão do card
+      const wsService = WebSocketService.getInstance();
+      wsService.notifyCardDeleted(id);
+
       return res.status(200).json({ message: 'Cartão deletado com sucesso' });
     } catch (error) {
       console.error('Erro ao deletar card:', error);

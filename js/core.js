@@ -7,6 +7,51 @@ let userName = localStorage.getItem("userName") || "";
 let authName = localStorage.getItem("authName") || "";
 let admin = localStorage.getItem("admin") || false;
 
+// Inicializa o WebSocketManager
+const wsManager = new WebSocketManager(
+  window.appConfig ? window.appConfig.apiUrl : "http://localhost:3004"
+);
+
+// Configurar callbacks para WebSocket
+wsManager.onNewCard((newCard) => {
+  // Formatar o novo card recebido via WebSocket
+  const formattedCard = {
+    id: newCard._id,
+    content: newCard.content,
+    date: formatDate(newCard.createdAt),
+    author: newCard.author || "",
+    medias: newCard.medias || [],
+  };
+
+  // Adiciona o novo card no início da lista se não for do usuário atual
+  if (formattedCard.author !== userName) {
+    cards.unshift(formattedCard);
+    updateCards();
+    showNotification("Novo card publicado por " + formattedCard.author);
+  }
+});
+
+wsManager.onCardDeleted((deletedCardId) => {
+  // Remove o card da lista local
+  const initialLength = cards.length;
+  cards = cards.filter((card) => card.id !== deletedCardId);
+
+  // Se algum card foi removido, atualiza a interface
+  if (cards.length < initialLength) {
+    updateCards();
+    showNotification("Um card foi removido");
+  }
+});
+
+wsManager.onConnect(() => {
+  console.log("Conectado ao servidor WebSocket");
+});
+
+wsManager.onDisconnect(() => {
+  console.log("Desconectado do servidor WebSocket");
+  // A reconexão é tratada automaticamente pelo WebSocketManager
+});
+
 // Função para verificar se o usuário já forneceu o nome
 function checkUserName() {
   const nameModal = document.getElementById("nameModal");
@@ -718,3 +763,9 @@ if (reloadBtn) {
 
 // Nota: os cards serão carregados somente após verificação do nome do usuário
 // O loadCards() agora é chamado no final da função checkUserName()
+
+// Conectar ao WebSocket quando a página carregar
+document.addEventListener("DOMContentLoaded", () => {
+  // Conectar ao WebSocket
+  wsManager.connect();
+});

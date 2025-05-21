@@ -7,7 +7,7 @@ interface IMedia {
 }
 
 export interface ICard extends Document {
-  content: string;
+  content?: string;
   medias: IMedia[];
   author: string;
   createdAt: Date;
@@ -16,7 +16,7 @@ export interface ICard extends Document {
 
 const CardSchema = new Schema<ICard>(
   {
-    content: { type: String, required: true },
+    content: { type: String, required: false },
     medias: { type: [String], required: false },
     author: { type: String, required: true },
   },

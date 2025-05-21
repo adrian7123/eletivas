@@ -13,7 +13,8 @@ const wsManager = new WebSocketManager(
 );
 
 // Configurar callbacks para WebSocket
-wsManager.onNewCard((newCard) => {
+wsManager.onNewCard(async (newCard) => {
+  await new Promise((resolve) => setTimeout(resolve, 100));
   // Formatar o novo card recebido via WebSocket
   const formattedCard = {
     id: newCard._id,
@@ -347,7 +348,8 @@ const createCard = async () => {
     };
 
     // Adiciona o novo card no início da lista
-    cards.unshift(newCard); // Limpa campos
+
+    cards.unshift(newCard);
     document.getElementById("cardContent").value = "";
     selectedImages = [];
     renderPreviewGrid();
@@ -412,6 +414,11 @@ const updateCards = () => {
     container.appendChild(emptyMessage);
     return;
   }
+
+  // remove duplicates
+  cards = cards.filter(
+    (card, index, self) => index === self.findIndex((c) => c.id === card.id)
+  );
 
   cards.forEach((card) => {
     const cardElement = document.createElement("div");

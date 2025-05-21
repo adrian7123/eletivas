@@ -1,4 +1,4 @@
-FROM node:20-alpine as builder
+FROM node:slim AS builder
 
 WORKDIR /api
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Imagem de produção
-FROM node:20-alpine
+FROM node:slim
 
 WORKDIR /api
 
@@ -31,4 +31,4 @@ RUN npm ci --only=production
 EXPOSE 3004
 
 # Comando para iniciar a aplicação
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "start"]

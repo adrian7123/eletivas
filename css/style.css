@@ -107,6 +107,12 @@ h1 {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.fullscreen-modal.visible {
+  opacity: 1;
 }
 
 .modal-content {
@@ -115,6 +121,14 @@ h1 {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-content.visible {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .close-modal {

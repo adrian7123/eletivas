@@ -501,13 +501,17 @@ let currentImageIndex = 0;
 
 function openFullscreen(imgSrc) {
   // Encontrar o card que contém esta imagem
+  const originalUrl = imgSrc.split('?key=')[1]; // Extrair a chave da URL
+  
+  // Encontrar o card correspondente à imagem clicada
   const currentCard = cards.find(
-    (card) => card.medias && card.medias.includes(imgSrc)
+    (card) => card.medias && card.medias.some(media => media === originalUrl)
   );
 
-  if (currentCard && currentCard.images) {
-    currentCardImages = currentCard.images;
-    currentImageIndex = currentCardImages.indexOf(imgSrc);
+  if (currentCard && currentCard.medias && currentCard.medias.length > 0) {
+    // Converter todas as URLs das medias para URLs completas
+    currentCardImages = currentCard.medias.map(media => imageUrl(media));
+    currentImageIndex = currentCardImages.findIndex(url => url === imgSrc);
   } else {
     // Fallback se não encontrar o card
     currentCardImages = [imgSrc];
@@ -517,11 +521,22 @@ function openFullscreen(imgSrc) {
   const modal = document.getElementById("fullscreenImageModal");
   const modalImg = document.getElementById("fullscreenImg");
   const counter = document.getElementById("imageCounter");
-
+  // Adicionar classe de transição e configurar animação
+  modalImg.classList.add('image-transition');
   modal.style.display = "block";
-  modalImg.src = imgSrc;
+  
+  // Pequeno delay antes de aplicar a opacidade para garantir transição suave
+  setTimeout(() => {
+    modal.classList.add('visible');
+    modalImg.src = imgSrc;
+    
+    // Pequeno delay para garantir que a imagem carregue antes da animação
+    setTimeout(() => {
+      modalImg.classList.add('visible');
+    }, 50);
+  }, 10);
+  
   counter.textContent = `${currentImageIndex + 1}/${currentCardImages.length}`;
-
   // Configurar navegação
   const prevBtn = document.getElementById("prevImage");
   const nextBtn = document.getElementById("nextImage");
@@ -540,16 +555,28 @@ function openFullscreen(imgSrc) {
     counter.style.display = "block";
   }
 
-  const closeBtn = document.querySelector(".close-modal");
+  // Ocultar botões se houver apenas uma imagem
+  if (currentCardImages.length <= 1) {
+    prevBtn.style.display = "none";
+    nextBtn.style.display = "none";
+    counter.style.display = "none";
+  } else {
+    prevBtn.style.display = "flex";
+    nextBtn.style.display = "flex";
+    counter.style.display = "block";
+  }  const closeBtn = document.querySelector(".close-modal");
   closeBtn.onclick = function () {
-    modal.style.display = "none";
+    closeFullscreenModal(modal, modalImg);
   };
 
   window.onclick = function (event) {
     if (event.target === modal) {
-      modal.style.display = "none";
+      closeFullscreenModal(modal, modalImg);
     }
   };
+
+  // Adicionar navegação por teclado
+  document.addEventListener("keydown", handleKeyNavigation);
 
   // Adicionar navegação por teclado
   document.addEventListener("keydown", handleKeyNavigation);
@@ -558,17 +585,49 @@ function openFullscreen(imgSrc) {
 function showPreviousImage() {
   if (currentCardImages.length <= 1) return;
 
-  currentImageIndex =
-    (currentImageIndex - 1 + currentCardImages.length) %
-    currentCardImages.length;
-  updateFullscreenImage();
+  // Adiciona classe de transição antes de mudar a imagem
+  const modalImg = document.getElementById("fullscreenImg");
+  modalImg.classList.add('image-exit');
+  
+  setTimeout(() => {
+    currentImageIndex = (currentImageIndex - 1 + currentCardImages.length) % currentCardImages.length;
+    updateFullscreenImage();
+    
+    // Remove a classe após um breve delay
+    setTimeout(() => {
+      modalImg.classList.remove('image-exit');
+      modalImg.classList.add('image-enter');
+      
+      // Remove a classe de entrada após a animação
+      setTimeout(() => {
+        modalImg.classList.remove('image-enter');
+      }, 300);
+    }, 50);
+  }, 150);
 }
 
 function showNextImage() {
   if (currentCardImages.length <= 1) return;
 
-  currentImageIndex = (currentImageIndex + 1) % currentCardImages.length;
-  updateFullscreenImage();
+  // Adiciona classe de transição antes de mudar a imagem
+  const modalImg = document.getElementById("fullscreenImg");
+  modalImg.classList.add('image-exit');
+  
+  setTimeout(() => {
+    currentImageIndex = (currentImageIndex + 1) % currentCardImages.length;
+    updateFullscreenImage();
+    
+    // Remove a classe após um breve delay
+    setTimeout(() => {
+      modalImg.classList.remove('image-exit');
+      modalImg.classList.add('image-enter');
+      
+      // Remove a classe de entrada após a animação
+      setTimeout(() => {
+        modalImg.classList.remove('image-enter');
+      }, 300);
+    }, 50);
+  }, 150);
 }
 
 function updateFullscreenImage() {
@@ -589,11 +648,13 @@ function handleKeyNavigation(e) {
 
   if (e.key === "ArrowLeft") {
     showPreviousImage();
+    e.preventDefault(); // Previne o comportamento padrão de scroll
   } else if (e.key === "ArrowRight") {
     showNextImage();
-  } else if (e.key === "Escape") {
-    document.getElementById("fullscreenImageModal").style.display = "none";
-    document.removeEventListener("keydown", handleKeyNavigation);
+    e.preventDefault(); // Previne o comportamento padrão de scroll  } else if (e.key === "Escape") {
+    const modal = document.getElementById("fullscreenImageModal");
+    const modalImg = document.getElementById("fullscreenImg");
+    closeFullscreenModal(modal, modalImg);
   }
 }
 

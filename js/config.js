@@ -17,27 +17,6 @@ const appConfig = {
 if (typeof window !== "undefined") {
   window.appConfig = appConfig;
 
-  // Função para carregar configurações da API se disponíveis
-  async function loadServerConfig() {
-    try {
-      const response = await fetch(`${appConfig.apiUrl}/config`);
-
-      if (response.ok) {
-        const serverConfig = await response.json();
-
-        // Atualiza as configurações com valores do servidor
-        Object.assign(appConfig, serverConfig);
-
-        console.log("Configurações carregadas do servidor:", appConfig);
-      }
-    } catch (error) {
-      console.warn(
-        "Não foi possível carregar configurações do servidor, usando valores padrão:",
-        error
-      );
-    }
-  }
-
   // Carrega configurações quando o documento estiver pronto
   document.addEventListener("DOMContentLoaded", loadServerConfig);
 }

@@ -462,7 +462,6 @@ const updateCards = () => {
       // Adicionar cada imagem ao grid
       card.medias.forEach((url) => {
         const imgUrl = imageUrl(url);
-        console.log("Adicionando imagem:", imgUrl);
         const imgWrapper = document.createElement("div");
         imgWrapper.className = "image-wrapper";
 
@@ -501,17 +500,17 @@ let currentImageIndex = 0;
 
 function openFullscreen(imgSrc) {
   // Encontrar o card que contém esta imagem
-  const originalUrl = imgSrc.split('?key=')[1]; // Extrair a chave da URL
-  
+  const originalUrl = imgSrc.split("?key=")[1]; // Extrair a chave da URL
+
   // Encontrar o card correspondente à imagem clicada
   const currentCard = cards.find(
-    (card) => card.medias && card.medias.some(media => media === originalUrl)
+    (card) => card.medias && card.medias.some((media) => media === originalUrl)
   );
 
   if (currentCard && currentCard.medias && currentCard.medias.length > 0) {
     // Converter todas as URLs das medias para URLs completas
-    currentCardImages = currentCard.medias.map(media => imageUrl(media));
-    currentImageIndex = currentCardImages.findIndex(url => url === imgSrc);
+    currentCardImages = currentCard.medias.map((media) => imageUrl(media));
+    currentImageIndex = currentCardImages.findIndex((url) => url === imgSrc);
   } else {
     // Fallback se não encontrar o card
     currentCardImages = [imgSrc];
@@ -522,20 +521,20 @@ function openFullscreen(imgSrc) {
   const modalImg = document.getElementById("fullscreenImg");
   const counter = document.getElementById("imageCounter");
   // Adicionar classe de transição e configurar animação
-  modalImg.classList.add('image-transition');
+  modalImg.classList.add("image-transition");
   modal.style.display = "block";
-  
+
   // Pequeno delay antes de aplicar a opacidade para garantir transição suave
   setTimeout(() => {
-    modal.classList.add('visible');
+    modal.classList.add("visible");
     modalImg.src = imgSrc;
-    
+
     // Pequeno delay para garantir que a imagem carregue antes da animação
     setTimeout(() => {
-      modalImg.classList.add('visible');
+      modalImg.classList.add("visible");
     }, 50);
   }, 10);
-  
+
   counter.textContent = `${currentImageIndex + 1}/${currentCardImages.length}`;
   // Configurar navegação
   const prevBtn = document.getElementById("prevImage");
@@ -564,7 +563,8 @@ function openFullscreen(imgSrc) {
     prevBtn.style.display = "flex";
     nextBtn.style.display = "flex";
     counter.style.display = "block";
-  }  const closeBtn = document.querySelector(".close-modal");
+  }
+  const closeBtn = document.querySelector(".close-modal");
   closeBtn.onclick = function () {
     closeFullscreenModal(modal, modalImg);
   };
@@ -587,20 +587,22 @@ function showPreviousImage() {
 
   // Adiciona classe de transição antes de mudar a imagem
   const modalImg = document.getElementById("fullscreenImg");
-  modalImg.classList.add('image-exit');
-  
+  modalImg.classList.add("image-exit");
+
   setTimeout(() => {
-    currentImageIndex = (currentImageIndex - 1 + currentCardImages.length) % currentCardImages.length;
+    currentImageIndex =
+      (currentImageIndex - 1 + currentCardImages.length) %
+      currentCardImages.length;
     updateFullscreenImage();
-    
+
     // Remove a classe após um breve delay
     setTimeout(() => {
-      modalImg.classList.remove('image-exit');
-      modalImg.classList.add('image-enter');
-      
+      modalImg.classList.remove("image-exit");
+      modalImg.classList.add("image-enter");
+
       // Remove a classe de entrada após a animação
       setTimeout(() => {
-        modalImg.classList.remove('image-enter');
+        modalImg.classList.remove("image-enter");
       }, 300);
     }, 50);
   }, 150);
@@ -611,20 +613,20 @@ function showNextImage() {
 
   // Adiciona classe de transição antes de mudar a imagem
   const modalImg = document.getElementById("fullscreenImg");
-  modalImg.classList.add('image-exit');
-  
+  modalImg.classList.add("image-exit");
+
   setTimeout(() => {
     currentImageIndex = (currentImageIndex + 1) % currentCardImages.length;
     updateFullscreenImage();
-    
+
     // Remove a classe após um breve delay
     setTimeout(() => {
-      modalImg.classList.remove('image-exit');
-      modalImg.classList.add('image-enter');
-      
+      modalImg.classList.remove("image-exit");
+      modalImg.classList.add("image-enter");
+
       // Remove a classe de entrada após a animação
       setTimeout(() => {
-        modalImg.classList.remove('image-enter');
+        modalImg.classList.remove("image-enter");
       }, 300);
     }, 50);
   }, 150);

@@ -156,7 +156,7 @@ window.Api = Api;
  */
 function formatMediaUrl(mediaUrl, type = "image") {
   // Se já for uma URL da nossa API, retorna como está
-  if (mediaUrl.startsWith(`http://localhost:3004/api/media/`)) {
+  if (mediaUrl.startsWith(`${window.appConfig.apiUrl}/api/media/`)) {
     return mediaUrl;
   }
 
@@ -170,12 +170,12 @@ function formatMediaUrl(mediaUrl, type = "image") {
     // Extrai o nome do arquivo (chave) da URL do S3
     const parts = mediaUrl.split("/");
     const mediaKey = parts[parts.length - 1];
-    return `http://localhost:3004/api/media/${mediaKey}`;
+    return `${window.appConfig.apiUrl}/api/media/${mediaKey}`;
   }
 
   // Se for apenas um nome de arquivo sem caminho completo
   if (!mediaUrl.includes("/")) {
-    return `http://localhost:3004/api/media/${mediaUrl}`;
+    return `${window.appConfig.apiUrl}/api/media/${mediaUrl}`;
   }
 
   // Caso contrário, retorna a URL como está

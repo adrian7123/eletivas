@@ -5,14 +5,10 @@ const appConfig = {
   // apiUrl: "http://localhost:3000",
   apiUrl: "https://api.eletivas.gestaoeficiente.com",
 
-  // Outras configurações que podem vir de variáveis de ambiente
-  imageUrlBase: process.env.IMAGE_URL_BASE || "http://localhost:9000/eletivas",
-
   // Função para obter a configuração da API
   getApiConfig() {
     return {
       apiUrl: this.apiUrl,
-      imageUrlBase: this.imageUrlBase,
     };
   },
 };

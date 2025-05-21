@@ -43,11 +43,14 @@ async function uploadMultipleImages(files) {
     // Mostra notificação de processamento com contagem de arquivos
     showNotification(`Enviando ${files.length} imagens...`, "info");
 
-    const response = await fetch("http://localhost:3004/api/upload/multiple", {
-      method: "POST",
-      body: formData,
-      // Não definimos timeout para permitir uploads grandes
-    });
+    const response = await fetch(
+      `${window.appConfig.apiUrl}/api/upload/multiple`,
+      {
+        method: "POST",
+        body: formData,
+        // Não definimos timeout para permitir uploads grandes
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Erro ao fazer upload das imagens: ${response.status}`);

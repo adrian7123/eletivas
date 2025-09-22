@@ -2,7 +2,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import http from 'http';
-import path from 'path';
 import { connectDB } from './config/database';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { indexRouter } from './routes';
@@ -24,8 +23,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', indexRouter);
-
-app.use(express.static(path.join(__dirname, '../../')));
 
 app.use(notFoundHandler);
 

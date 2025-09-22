@@ -1,7 +1,9 @@
 FROM nginx:alpine
 
-# Copiar os arquivos estáticos para o diretório raiz do nginx
-COPY . /usr/share/nginx/html/
+COPY index.html /usr/share/nginx/html/
+COPY css/ /usr/share/nginx/html/css/
+COPY js/ /usr/share/nginx/html/js/
+COPY imgs/ /usr/share/nginx/html/imgs/
 
 # Configuração do nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf

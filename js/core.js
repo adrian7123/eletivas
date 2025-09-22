@@ -1,6 +1,6 @@
 // Inicializa a API com a URL base das configurações
 const api = new Api(
-  window.appConfig ? window.appConfig.apiUrl : "http://localhost:3004"
+  window.appConfig ? window.appConfig.apiUrl : "http://localhost:3006"
 );
 let cards = [];
 let userName = localStorage.getItem("userName") || "";
@@ -9,7 +9,7 @@ let admin = localStorage.getItem("admin") || false;
 
 // Inicializa o WebSocketManager
 const wsManager = new WebSocketManager(
-  window.appConfig ? window.appConfig.apiUrl : "http://localhost:3004"
+  window.appConfig ? window.appConfig.apiUrl : "http://localhost:3006"
 );
 
 // Configurar callbacks para WebSocket
